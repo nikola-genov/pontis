@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/nikola-genov/pontis/issues"
   },
-  "homepage": "https://github.com/nikola-genov/pontis#readme"
+  "homepage": "https://github.com/nikola-genov/pontis#readme",
+  "devDependencies": {
+    "hardhat": "^2.9.7"
+  }
 }
