@@ -1,5 +1,5 @@
 require("@nomiclabs/hardhat-waffle");
-//require("@nomiclabs/hardhat-etherscan");
+require("@nomiclabs/hardhat-etherscan");
 require("solidity-coverage");
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -11,6 +11,19 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
     console.log(account.address);
   }
 });
+
+task("deploy-testnets", "Deploys contract on a provided network")
+  .setAction(async (taskArguments, hre, runSuper) => {
+    const deployElectionContract = require("./scripts/deploy");
+    await deployElectionContract(taskArguments);
+  });
+
+task("deploy-mainnet", "Deploys contract on a provided network")
+  .addParam("privateKey", "Please provide the private key")
+  .setAction(async ({privateKey}) => {
+    const deployElectionContract = require("./scripts/deploy-with-param");
+    await deployElectionContract(privateKey);
+  });
 
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
@@ -30,14 +43,16 @@ module.exports = {
   },
   networks: {
     rinkeby: {
-      url: "https://rinkeby.infura.io/v3/40c2813049e44ec79cb4d7e0d18de173",
+      url: "https://rinkeby.infura.io/v3/b35c51055583480ba44b8b1c77d83bf9",
       accounts: [
-        '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
-        '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d'
+        
       ]
     },
     // ropsten: {
 
     // }
+  },
+  etherscan: {
+    apiKey: "UZ6NE7US3W1HBWRG1946TRAJ7HW8QWZ8NA"
   }
 };
