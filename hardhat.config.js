@@ -12,6 +12,15 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
+task("deploy", "Deploys the contract", async (taskArgs, hre) => {
+  const phoboCoin = await hre.ethers.getContractFactory("PhoboCoin");
+  const phobo = await phoboCoin.deploy();
+
+  await phobo.deployed();
+
+  console.log("PhoboCoin deployed to:", phobo.address);
+});
+
 task("deploy-testnets", "Deploys contract on a provided network")
   .setAction(async (taskArguments, hre, runSuper) => {
     const deployElectionContract = require("./scripts/deploy");
