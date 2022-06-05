@@ -1,7 +1,7 @@
 const hre = require('hardhat')
 const ethers = hre.ethers;
 
-async function deployElectionContract() {
+async function deployGreeterContract() {
     await hre.run('compile'); // We are compiling the contracts using subtask
     const [deployer] = await ethers.getSigners(); // We are getting the deployer
   
@@ -17,4 +17,4 @@ async function deployElectionContract() {
     console.log('Done!');
 }
   
-module.exports = deployElectionContract;
+module.exports = deployGreeterContract;
