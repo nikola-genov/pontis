@@ -1,20 +1,26 @@
 const hre = require('hardhat')
 const ethers = hre.ethers;
 
-async function deployGreeterContract() {
+async function deployBridgeContract() {
     await hre.run('compile'); // We are compiling the contracts using subtask
     const [deployer] = await ethers.getSigners(); // We are getting the deployer
   
-    console.log('Deploying contracts with the account:', deployer.address); // We are printing the address of the deployer
-    console.log('Account balance:', (await deployer.getBalance()).toString()); // We are printing the account balance
+    console.log('Deploying contracts with the account:', deployer.address);
+    console.log('Account balance:', (await deployer.getBalance()).toString());
 
-    const greeter = await ethers.getContractFactory("Greeter");
-    const greeterContract = await greeter.deploy("Hola, amigo");
-    console.log('Waiting for Greeter deployment...');
-    await greeterContract.deployed();
+    const PhoboCoin = await hre.ethers.getContractFactory("PhoboCoin");
+    const phobo = await PhoboCoin.deploy();
+    console.log('Waiting for PhoboCoin deployment...');
+    await phobo.deployed();
+    console.log("PhoboCoin deployed to:", phobo.address);
 
-    console.log('Greeter Contract address: ', greeterContract.address);
+    const PontisContract = await hre.ethers.getContractFactory("Pontis");
+    const pontis = await PontisContract.deploy();
+    console.log('Waiting for Pontis deployment...');
+    await pontis.deployed();
+    console.log("Pontis deployed to:", pontis.address);
+
     console.log('Done!');
 }
   
-module.exports = deployGreeterContract;
+module.exports = deployBridgeContract;

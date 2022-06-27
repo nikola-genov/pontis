@@ -23,8 +23,8 @@ task("deploy", "Deploys the contract", async (taskArgs, hre) => {
 
 task("deploy-testnets", "Deploys contract on a provided network")
   .setAction(async (taskArguments, hre, runSuper) => {
-    const deployElectionContract = require("./scripts/deploy");
-    await deployElectionContract(taskArguments);
+    const deployBridgeContract = require("./scripts/deploy");
+    await deployBridgeContract(taskArguments);
   });
 
 task("deploy-mainnet", "Deploys contract on a provided network")
