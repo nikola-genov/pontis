@@ -54,12 +54,15 @@ module.exports = {
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/b35c51055583480ba44b8b1c77d83bf9",
       accounts: [
-        
+        'todo - private key config'
       ]
     },
-    // ropsten: {
-
-    // }
+    ropsten: {
+      url: "https://ropsten.infura.io/v3/b35c51055583480ba44b8b1c77d83bf9",
+      accounts: [
+        'todo - private key config'
+      ]
+    }
   },
   etherscan: {
     apiKey: "UZ6NE7US3W1HBWRG1946TRAJ7HW8QWZ8NA"
