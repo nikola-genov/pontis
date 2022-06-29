@@ -33,10 +33,13 @@ describe("Pontis", function () {
     await phoboCoin.mint(jimi.address, amount * 3);
     await phoboCoin.connect(jimi).approve(pontis.address, amount);
 
-    await expect(pontis.connect(jimi).lock(phoboCoin.address, amount, {
+    // let allowance = await phoboCoin.allowance(jimi.address, pontis.address);
+    // console.log(allowance);
+
+    await expect(pontis.connect(jimi).lock(3, phoboCoin.address, amount, {
       value: fee
     }))
     .to.emit(pontis, 'Lock')
-    .withArgs(phoboCoin.address, amount, fee);
+    .withArgs(3, phoboCoin.address, jimi.address, amount, fee);
   });
 });

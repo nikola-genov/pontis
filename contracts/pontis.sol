@@ -14,14 +14,15 @@ contract Pontis is Ownable, IBridge {
     uint256 constant minFee = 100; // minimum fee in wei
 
     mapping(uint8 => mapping(address => address)) private nativeToWrappedTokenMap;
-
-    //function lock(address _nativeToken, uint256 _amount, address _receiver) external payable override {
-    function lock(address _nativeToken, uint256 _amount) external payable override {
+    
+    function lock(uint8 _targetChain, address _nativeToken, uint256 _amount) external payable override {
         require(msg.value >= minFee, "Minimum fee is 100 wei.");
         
         ERC20(_nativeToken).transferFrom(msg.sender, address(this), _amount);
 
-        emit Lock(_nativeToken, _amount, msg.value);
+        // Currently the receiver address must be the same as the sender. 
+        // TODO - should we allow different receiver addresses???
+        emit Lock(_targetChain, _nativeToken, msg.sender, _amount, msg.value);
     }
 
     function mint(uint8 _nativeChain, address _nativeToken, uint256 _amount, address _receiver) external override
