@@ -1,6 +1,5 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-//const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 
 describe("Pontis", function () {
   let phoboCoin;
@@ -8,16 +7,17 @@ describe("Pontis", function () {
   let pontis;
   let owner;
   let jimi;
+  let erc20Abi;
+  let erc20Signer;
 
   before(async () => {
     phoboCoinFactory = await ethers.getContractFactory('PhoboCoin');
     phoboCoin = await phoboCoinFactory.deploy();
     await phoboCoin.deployed();
 
-    wrappedPhoboCoinFactory = await ethers.getContractFactory('WrappedPhoboCoin');
-    wrappedPhoboCoin = await wrappedPhoboCoinFactory.deploy();
-    await wrappedPhoboCoin.deployed();
-
+    erc20Abi = phoboCoin.interface;
+    erc20Signer = phoboCoin.signer;
+    
     const pontisFactory = await ethers.getContractFactory("Pontis");
     pontis = await pontisFactory.deploy();
     await pontis.deployed();
@@ -55,12 +55,12 @@ describe("Pontis", function () {
     expect(mintEvent.args[2]).to.equal(jimi.address);
     
     let wrappedPhobo = mintEvent.args[0];
-    // TODO - how to access WrappedPhoboCoin contract by wrappedPhobo address 
-    //await wpContract.connect(jimi).approve(pontis.address, amount);
-    //await wrappedPhoboCoin(wrappedPhobo).connect(jimi).approve(pontis.address, amount);
 
-    // await expect(pontis.connect(jimi).burn(phoboCoin.address, amount, jimi.address))
-    //   .to.emit(pontis, 'Burn')
-    //   .withArgs(wrappedPhobo, amount, jimi.address);
+    const wrappedPhoboContract = new ethers.Contract(wrappedPhobo, erc20Abi, erc20Signer);
+    await wrappedPhoboContract.connect(jimi).approve(pontis.address, amount);
+
+    await expect(pontis.connect(jimi).burn(wrappedPhobo, amount, jimi.address))
+      .to.emit(pontis, 'Burn')
+      .withArgs(wrappedPhobo, amount, jimi.address);
   });
 });
