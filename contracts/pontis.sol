@@ -13,7 +13,13 @@ contract Pontis is Ownable, IBridge {
 
     uint256 constant minFee = 100; // minimum fee in wei
 
+    struct TokenInfo {
+        uint8 chainId;
+        address tokenAddress;
+    }
+
     mapping(uint8 => mapping(address => address)) private nativeToWrappedTokenMap;
+    mapping(address => TokenInfo) private wrappedToNativeTokenMap;
     
     function lock(uint8 _targetChain, address _nativeToken, uint256 _amount) external payable override {
         require(msg.value >= minFee, "Minimum fee is 100 wei.");
@@ -29,13 +35,21 @@ contract Pontis is Ownable, IBridge {
     {
         //require(TODO);
 
+        if(nativeToWrappedTokenMap[_nativeChain][_nativeToken] == address(0)) {
+            // deploy a new instance of the wrapped token for each chain/token combination
+            WrappedPhoboCoin wpc = new WrappedPhoboCoin();
+            nativeToWrappedTokenMap[_nativeChain][_nativeToken] = address(wpc);
+            wrappedToNativeTokenMap[address(wpc)].chainId = _nativeChain;
+            wrappedToNativeTokenMap[address(wpc)].tokenAddress = _nativeToken;
+        }
+        
         WrappedPhoboCoin(nativeToWrappedTokenMap[_nativeChain][_nativeToken]).mint(_receiver, _amount);
 
         emit Mint(nativeToWrappedTokenMap[_nativeChain][_nativeToken], _amount, _receiver);
     }
 
     function burn(address _wrappedToken, uint256 _amount, address _receiver) external override {
-        //require(TODO);
+        //require(TODO); - msg.sender == _reciever???
 
         WrappedPhoboCoin(_wrappedToken).burnFrom(msg.sender, _amount);
 

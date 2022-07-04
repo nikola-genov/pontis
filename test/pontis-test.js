@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+//const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 
 describe("Pontis", function () {
   let phoboCoin;
@@ -33,13 +34,33 @@ describe("Pontis", function () {
     await phoboCoin.mint(jimi.address, amount * 3);
     await phoboCoin.connect(jimi).approve(pontis.address, amount);
 
-    // let allowance = await phoboCoin.allowance(jimi.address, pontis.address);
-    // console.log(allowance);
-
     await expect(pontis.connect(jimi).lock(3, phoboCoin.address, amount, {
       value: fee
     }))
     .to.emit(pontis, 'Lock')
     .withArgs(3, phoboCoin.address, jimi.address, amount, fee);
+  });
+
+  it('Should emit Mint and Burn events', async () => {
+    const amount = 50;
+    const chainId = 4;
+
+    const tx = await pontis.connect(jimi).mint(chainId, phoboCoin.address, amount, jimi.address);
+    const receipt = await tx.wait();
+    
+    let mintEvent = receipt.events.find(e => e.event == 'Mint');
+    expect(mintEvent).to.not.be.null;
+    expect(mintEvent.args[0]).to.not.be.null;
+    expect(mintEvent.args[1]).to.equal(amount);
+    expect(mintEvent.args[2]).to.equal(jimi.address);
+    
+    let wrappedPhobo = mintEvent.args[0];
+    // TODO - how to access WrappedPhoboCoin contract by wrappedPhobo address 
+    //await wpContract.connect(jimi).approve(pontis.address, amount);
+    //await wrappedPhoboCoin(wrappedPhobo).connect(jimi).approve(pontis.address, amount);
+
+    // await expect(pontis.connect(jimi).burn(phoboCoin.address, amount, jimi.address))
+    //   .to.emit(pontis, 'Burn')
+    //   .withArgs(wrappedPhobo, amount, jimi.address);
   });
 });
