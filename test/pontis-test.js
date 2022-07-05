@@ -44,8 +44,12 @@ describe("Pontis", function () {
   it('Should emit Mint and Burn events', async () => {
     const amount = 50;
     const chainId = 4;
+    const transactionHash = "asdzxc12334545656757567";
 
-    const tx = await pontis.connect(jimi).mint(chainId, phoboCoin.address, amount, jimi.address);
+    const tx = await pontis
+      .connect(jimi)
+      .mint(chainId, phoboCoin.address, 'WrappedPhoboCoin', 'wPHO', amount, jimi.address, transactionHash);
+    
     const receipt = await tx.wait();
     
     let mintEvent = receipt.events.find(e => e.event == 'Mint');
@@ -53,14 +57,15 @@ describe("Pontis", function () {
     expect(mintEvent.args[0]).to.not.be.null;
     expect(mintEvent.args[1]).to.equal(amount);
     expect(mintEvent.args[2]).to.equal(jimi.address);
+    expect(mintEvent.args[3]).to.equal(transactionHash);
     
     let wrappedPhobo = mintEvent.args[0];
 
     const wrappedPhoboContract = new ethers.Contract(wrappedPhobo, erc20Abi, erc20Signer);
     await wrappedPhoboContract.connect(jimi).approve(pontis.address, amount);
 
-    await expect(pontis.connect(jimi).burn(wrappedPhobo, amount, jimi.address))
+    await expect(pontis.connect(jimi).burn(wrappedPhobo, amount, jimi.address, transactionHash))
       .to.emit(pontis, 'Burn')
-      .withArgs(wrappedPhobo, amount, jimi.address);
+      .withArgs(wrappedPhobo, amount, jimi.address, transactionHash);
   });
 });

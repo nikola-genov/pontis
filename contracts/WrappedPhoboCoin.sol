@@ -5,9 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
 
 contract WrappedPhoboCoin is ERC20PresetMinterPauser {
-    string public constant Name = "WrappedPhoboCoin";
-    string public constant Symbol = "wPHO";
-
-    constructor() ERC20PresetMinterPauser(Name, Symbol) {
+    constructor(string memory _name, string memory _symbol) ERC20PresetMinterPauser(_name, _symbol) {
     }
 }
