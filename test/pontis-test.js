@@ -61,6 +61,8 @@ describe("Pontis", function () {
     
     let wrappedPhobo = mintEvent.args[0];
 
+    await expect((await pontis.getWrappedTokens()).length).to.equal(1);
+
     const wrappedPhoboContract = new ethers.Contract(wrappedPhobo, erc20Abi, erc20Signer);
     await wrappedPhoboContract.connect(jimi).approve(pontis.address, amount);
 
