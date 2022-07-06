@@ -31,36 +31,45 @@ contract Pontis is Ownable, IBridge {
         emit Lock(_targetChain, _nativeToken, msg.sender, _amount, msg.value);
     }
 
-    function mint(uint8 _nativeChain, address _nativeToken, uint256 _amount, address _receiver) external override
+    function mint(
+        uint8 _nativeChain, 
+        address _nativeToken, 
+        string memory _tokenName, 
+        string memory _tokenSymbol, 
+        uint256 _amount, 
+        address _receiver, 
+        string memory transactionHash
+    ) external override
     {
         //require(TODO);
-
-        if(nativeToWrappedTokenMap[_nativeChain][_nativeToken] == address(0)) {
+        address wrappedTokenAddress = nativeToWrappedTokenMap[_nativeChain][_nativeToken];
+        if(wrappedTokenAddress == address(0)) {
             // deploy a new instance of the wrapped token for each chain/token combination
-            WrappedPhoboCoin wpc = new WrappedPhoboCoin();
-            nativeToWrappedTokenMap[_nativeChain][_nativeToken] = address(wpc);
-            wrappedToNativeTokenMap[address(wpc)].chainId = _nativeChain;
-            wrappedToNativeTokenMap[address(wpc)].tokenAddress = _nativeToken;
+            WrappedPhoboCoin wpc = new WrappedPhoboCoin(_tokenName,  _tokenSymbol);
+            wrappedTokenAddress =  address(wpc);
+            nativeToWrappedTokenMap[_nativeChain][_nativeToken] = wrappedTokenAddress;
+            wrappedToNativeTokenMap[wrappedTokenAddress].chainId = _nativeChain;
+            wrappedToNativeTokenMap[wrappedTokenAddress].tokenAddress = _nativeToken;
         }
         
-        WrappedPhoboCoin(nativeToWrappedTokenMap[_nativeChain][_nativeToken]).mint(_receiver, _amount);
+        WrappedPhoboCoin(wrappedTokenAddress).mint(_receiver, _amount);
 
-        emit Mint(nativeToWrappedTokenMap[_nativeChain][_nativeToken], _amount, _receiver);
+        emit Mint(wrappedTokenAddress, _amount, _receiver, transactionHash);
     }
 
-    function burn(address _wrappedToken, uint256 _amount, address _receiver) external override {
+    function burn(address _wrappedToken, uint256 _amount, address _receiver, string memory transactionHash) external override {
         //require(TODO); - msg.sender == _reciever???
 
         WrappedPhoboCoin(_wrappedToken).burnFrom(msg.sender, _amount);
 
-        emit Burn(_wrappedToken, _amount, _receiver);
+        emit Burn(_wrappedToken, _amount, _receiver, transactionHash);
     }
 
-    function unlock(address _nativeToken, uint256 _amount, address _receiver) external override {
+    function unlock(address _nativeToken, uint256 _amount, address _receiver, string memory transactionHash) external override {
         //require(TODO);
 
         ERC20(_nativeToken).transferFrom(address(this), msg.sender, _amount);
 
-        emit Unlock(_nativeToken, _amount, _receiver);
+        emit Unlock(_nativeToken, _amount, _receiver, transactionHash);
     }
 }
