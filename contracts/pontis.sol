@@ -16,11 +16,22 @@ contract Pontis is Ownable, IBridge {
     struct TokenInfo {
         uint8 chainId;
         address tokenAddress;
+        address wrappedTokenAddress;
     }
 
     mapping(uint8 => mapping(address => address)) private nativeToWrappedTokenMap;
     mapping(address => TokenInfo) private wrappedToNativeTokenMap;
+    address[] wrappedTokens;
     
+    function getWrappedTokens() external view returns (TokenInfo[] memory) {
+        TokenInfo[] memory tokens = new TokenInfo[](wrappedTokens.length);
+        for (uint16 i = 0; i < wrappedTokens.length; i++) {
+            tokens[i] = wrappedToNativeTokenMap[wrappedTokens[i]];
+        }
+
+        return tokens;
+    } 
+
     function lock(uint8 _targetChain, address _nativeToken, uint256 _amount) external payable override {
         require(msg.value >= minFee, "Minimum fee is 100 wei.");
         
@@ -48,8 +59,14 @@ contract Pontis is Ownable, IBridge {
             WrappedPhoboCoin wpc = new WrappedPhoboCoin(_tokenName,  _tokenSymbol);
             wrappedTokenAddress =  address(wpc);
             nativeToWrappedTokenMap[_nativeChain][_nativeToken] = wrappedTokenAddress;
-            wrappedToNativeTokenMap[wrappedTokenAddress].chainId = _nativeChain;
-            wrappedToNativeTokenMap[wrappedTokenAddress].tokenAddress = _nativeToken;
+            
+            wrappedToNativeTokenMap[wrappedTokenAddress] = TokenInfo({
+                chainId: _nativeChain, 
+                tokenAddress: _nativeToken,
+                wrappedTokenAddress: wrappedTokenAddress
+            });
+            
+            wrappedTokens.push(wrappedTokenAddress);
         }
         
         WrappedPhoboCoin(wrappedTokenAddress).mint(_receiver, _amount);
