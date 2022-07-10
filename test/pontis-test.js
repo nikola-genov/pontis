@@ -68,6 +68,15 @@ describe("Pontis", function () {
 
     await expect(pontis.connect(jimi).burn(wrappedPhobo, amount, jimi.address, transactionHash))
       .to.emit(pontis, 'Burn')
-      .withArgs(wrappedPhobo, amount, jimi.address, transactionHash);
+      .withArgs(wrappedPhobo, amount, jimi.address, chainId, phoboCoin.address, transactionHash);
+  });
+
+  it('Should emit Unlock event', async () => {
+    const amount = 3;
+    await phoboCoin.mint(pontis.address, amount * 10);
+
+    await expect(pontis.connect(jimi).unlock(phoboCoin.address, amount, jimi.address, ''))
+      .to.emit(pontis, 'Unlock')
+      .withArgs(phoboCoin.address, amount, jimi.address, '');
   });
 });

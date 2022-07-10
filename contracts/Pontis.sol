@@ -79,14 +79,16 @@ contract Pontis is Ownable, IBridge {
         //require(TODO); - msg.sender == _reciever???
 
         WrappedPhoboCoin(_wrappedToken).burnFrom(msg.sender, _amount);
+        
+        TokenInfo memory t = wrappedToNativeTokenMap[_wrappedToken];
 
-        emit Burn(_wrappedToken, _amount, _receiver, transactionHash);
+        emit Burn(_wrappedToken, _amount, _receiver, t.chainId, t.tokenAddress, transactionHash);
     }
 
     function unlock(address _nativeToken, uint256 _amount, address _receiver, string memory transactionHash) external override {
         //require(TODO);
 
-        ERC20(_nativeToken).transferFrom(address(this), msg.sender, _amount);
+        ERC20(_nativeToken).transfer(_receiver, _amount);
 
         emit Unlock(_nativeToken, _amount, _receiver, transactionHash);
     }

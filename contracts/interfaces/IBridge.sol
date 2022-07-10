@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 interface IBridge {
     event Lock(uint8 targetChain, address token, address receiver, uint256 amount, uint256 serviceFee);
     event Mint(address token, uint256 amount, address receiver, string transactionHash);
-    event Burn(address token, uint256 amount, address receiver, string transactionHash);
+    event Burn(address token, uint256 amount, address receiver, uint8 nativeChainId, address nativeToken, string transactionHash);
     event Unlock(address token, uint256 amount, address receiver, string transactionHash);
     
     // function initRouter(uint8 _chainId, address _token) external;
