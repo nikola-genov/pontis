@@ -23,6 +23,7 @@ contract Pontis is Ownable, IBridge {
     mapping(address => TokenInfo) private wrappedToNativeTokenMap;
     address[] wrappedTokens;
     
+    // TODO - public mappings for efficiency!!!!
     function getWrappedTokens() external view returns (TokenInfo[] memory) {
         TokenInfo[] memory tokens = new TokenInfo[](wrappedTokens.length);
         for (uint16 i = 0; i < wrappedTokens.length; i++) {
